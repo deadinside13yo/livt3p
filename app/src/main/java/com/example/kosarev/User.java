@@ -1,11 +1,22 @@
-package com.example.livt2p;
+package com.example.kosarev;
 
 public class User {
     String email, name;
 
-    public User(String email, String name) {
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    int id;
+
+    public User(String email, String name, int id) {
         this.email = email;
         this.name = name;
+        this.id = id;
     }
 
     public String getEmail() {

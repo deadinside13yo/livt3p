@@ -1,4 +1,4 @@
-package com.example.livt2p;
+package com.example.kosarev;
 
 import android.content.Context;
 

@@ -1,4 +1,4 @@
-package com.example.livt2p;
+package com.example.kosarev;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,8 +13,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 
-import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,8 +22,9 @@ public class MainActivity extends AppCompatActivity {
     final String LOG_TAG = "myLogs";
     final List<User> users = new ArrayList<>();
     DataAdapter adapter;
-
-    Button btnAdd, btnRead, btnClear;
+    Spinner spinner;
+    User currentUser;
+    Button btnAdd, btnRead, btnClear, btnDel, btnUp;
     EditText etName, etEmail;
 
     DBHelper dbHelper;
@@ -33,9 +34,19 @@ public class MainActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        etName =    findViewById(R.id.etName);
-        etEmail =   findViewById(R.id.etEmail);
+        etName = findViewById(R.id.etName);
+        etEmail = findViewById(R.id.etEmail);
         adapter = new DataAdapter(this, users);
+
+        adapter.setSelectElementListener(new DataAdapter.SelectElementListener(){
+
+            @Override
+            public void selectElement(User user) {
+                currentUser = user;
+                etName.setText(user.getName());
+                etEmail.setText(user.getEmail());
+            }
+        });
         RecyclerView recyler = findViewById(R.id.listItem);
         recyler.setAdapter(adapter);
 
@@ -82,6 +93,32 @@ public class MainActivity extends AppCompatActivity {
 //                dbHelper = new DBHelper(this);
 //                   readBd(dbHelper.getWritableDatabase());
                break;
+            case R.id.btnDel:
+                if (currentUser == null) {
+                    break;
+                }
+                Log.d(LOG_TAG, "--- Delete from mytable: ---");
+                // удаляем по id
+                int delCount = db.delete("mytable", "id = " + currentUser.getId(), null);
+                Log.d(LOG_TAG, "deleted rows count = " + delCount);
+                readBd(db);
+                break;
+
+            case R.id.btnUp:
+                if (currentUser == null) {
+                    break;
+                }
+                Log.d(LOG_TAG, "--- Update mytable: ---");
+                // подготовим значения для обновления
+                cv.put("name", name);
+                cv.put("email", email);
+                // обновляем по id
+                int updCount = db.update("mytable", cv, "id = ?",
+                        new String[] {String.valueOf(currentUser.getId())});
+                Log.d(LOG_TAG, "updated rows count = " + updCount);
+                readBd(db);
+                break;
+
         }
         // закрываем подключение к БД
         dbHelper.close();
@@ -91,7 +128,30 @@ public class MainActivity extends AppCompatActivity {
         users.clear();
         Log.d(LOG_TAG, "--- Rows in mytable: ---");
         // делаем запрос всех данных из таблицы mytable, получаем Cursor
-        Cursor c = db.query("mytable", null, null, null, null, null, null);
+        String orderBy ="";
+        String NAME_COLUMN = "name";
+        String EMAIL_COLUMN = "email";
+        String DESC = " DESC";
+        switch ((int) spinner.getSelectedItemId())
+        {
+            case 0:
+                orderBy = NAME_COLUMN;
+                break;
+            case 1:
+                orderBy = NAME_COLUMN+DESC;
+                break;
+            case 2:
+                orderBy = EMAIL_COLUMN;
+                break;
+            case 3:
+                orderBy = EMAIL_COLUMN+DESC;
+                break;
+            default:
+                break;
+        }
+
+// делаем запрос всех данных из таблицы mytable, получаем Cursor
+        Cursor c = db.query("mytable", null, null, null, null, null, orderBy);
 
         // ставим позицию курсора на первую строку выборки
         // если в выборке нет строк, вернется false
@@ -108,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
                         "ID = " + c.getInt(idColIndex) +
                                 ", name = " + c.getString(nameColIndex) +
                                 ", email = " + c.getString(emailColIndex));
-                users.add(new User(c.getString(emailColIndex), c.getString(nameColIndex)));
+                users.add(new User(c.getString(emailColIndex), c.getString(nameColIndex), c.getInt(idColIndex)));
                 // переход на следующую строку
                 // а если следующей нет (текущая - последняя), то false - выходим из цикла
             } while (c.moveToNext());

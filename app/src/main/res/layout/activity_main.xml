@@ -68,11 +68,43 @@
             android:layout_height="wrap_content"
             android:text="Clear">
         </Button>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <Button
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:text="Delete"
+                android:textSize="8sp"
+                android:onClick="onClick"
+                android:id="@+id/btnDel"/>
+            <Button
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:text="Update"
+                android:onClick="onClick"
+                android:textSize="8sp"
+                android:id="@+id/btnUp"/>
+        </LinearLayout>
     </LinearLayout>
+
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/sortParams" />
+
+    <SeekBar
+        android:id="@+id/seekBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/listItem"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
 </LinearLayout>

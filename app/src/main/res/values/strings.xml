@@ -1,3 +1,9 @@
 <resources>
-    <string name="app_name">livt2p</string>
+    <string name="app_name">kosarev</string>
+    <string-array name="sortParams">
+        <item>Name по возрастанию</item>
+        <item>Name по убыванию</item>
+        <item>Email по возрастанию</item>
+        <item>Name  по убыванию</item>
+    </string-array>
 </resources>
