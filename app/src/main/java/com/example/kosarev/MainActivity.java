@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
         dbHelper = new DBHelper(this);
     }
 
+
     public void onClick(View v) {
 
         // создаем объект для данных
@@ -179,25 +180,28 @@ public class MainActivity extends AppCompatActivity {
     }
 
     class DBHelper extends SQLiteOpenHelper {
-
+        final int DBVersion = 2;
         public DBHelper(Context context) {
             // конструктор суперкласса
             super(context, "myDB", null, 1);
+
         }
 
         @Override
         public void onCreate(SQLiteDatabase db) {
             Log.d(LOG_TAG, "--- onCreate database ---");
             // создаем таблицу с полями
-            db.execSQL("create table mytable ("
-                    + "id integer primary key autoincrement,"
-                    + "name text,"
-                    + "email text" + ");");
+            for (int i = 1; i < DBVersion; i++) {
+                onUpgrade(db,i-1,i);
+            }
         }
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+            //если был совершен переход от первой версии ко второй
+            if(oldVersion == 1 && newVersion == 2)
+                //добавляем столбец "возраст"
+                db.execSQL("alter table mytable add column age integer;");
         }
     }
 }

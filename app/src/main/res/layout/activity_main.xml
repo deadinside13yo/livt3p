@@ -97,7 +97,9 @@
     <SeekBar
         android:id="@+id/seekBar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:entries="@array/sortParams"
+        />
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
